@@ -27,9 +27,49 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = []
+traversal_path = ['n', 'w', 's', 'e']
+
+def traversal(visited=None, previous=None, came_from=None):
+    current_room = player.current_room.id
+    exits = player.current_room.get_exits()
+    reverse = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+    # redeclaring visited every time as to not cause issues with carrying over values with multiple function calls
+    if visited is None:  # don't want to redefine this if we're being passed and updated value
+        visited = {}
+
+    if current_room not in visited:
+        # have to instantiate an object before you can assign values in a nested object
+        visited[current_room] = {}
+
+    # if we're not on the first node, there will always be a previous otherwise
+    if previous:
+        # what direction did we go to get to the current room?
+        # i.e. 0: { 'n': 1 }, north from 0 = 1
+        visited[previous][came_from] = current_room
+        # what direction would we have to go to get back?
+        # i.e. 1: { 's': 0  } south from 1 = 0
+        visited[current_room][reverse[came_from]] = previous
+
+    for direction in exits:
+        if direction not in visited[current_room]:
+            traversal_path.append(direction)
+            player.travel(direction)
+            # for each viable direction in every single node, we're repeating this for loop
+            traversal(visited, previous=current_room, came_from=direction)
+
+    # we hit this case when the direction IS in visited, but we haven't touched all of the nodes yet
+    if len(visited) < len(room_graph):
+        # retracing steps until we get to a point where
+        retrace = reverse[came_from]
+        player.travel(retrace)
+        traversal_path.append(retrace)
+
+    # print(visited)
+    # print(traversal_path)
 
 
+traversal()
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
