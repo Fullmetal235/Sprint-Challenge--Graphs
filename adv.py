@@ -27,7 +27,7 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = ['n', 'w', 's', 'e']
+traversal_path = []
 
 def traversal(visited=None, previous=None, came_from=None):
     current_room = player.current_room.id
